@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -56,8 +57,10 @@ public class PhotoGalleryFragment extends Fragment {
 
         updateItems();
 
-        Intent i = new Intent(getActivity(), PollService.class);
-        getActivity().startService(i);
+//        Intent i = new Intent(getActivity(), PollService.class);
+//        getActivity().startService(i);
+
+//        PollService.setServiceAlarm(getActivity(), true);
 
         mThumbnailThread = new ThumbnailDownloader<>(new Handler());
         mThumbnailThread.setListener(new ThumbnailDownloader.Listener<ImageView>() {
@@ -265,8 +268,29 @@ public class PhotoGalleryFragment extends Fragment {
                         .putString(FlickrFetchr.PREF_SEARCH_QUERY, null).commit();
                 updateItems();
                 return true;
+            case R.id.menu_item_toggle_polling:
+                boolean shouldStartAlarm = !PollService.isServiceAlarmOn(getActivity());
+                PollService.setServiceAlarm(getActivity(), shouldStartAlarm);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    getActivity().invalidateOptionsMenu();
+                }
+
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        MenuItem toggleItem = menu.findItem(R.id.menu_item_toggle_polling);
+        if (PollService.isServiceAlarmOn(getActivity())) {
+            toggleItem.setTitle(R.string.stop_polling);
+        } else {
+            toggleItem.setTitle(R.string.start_polling);
         }
     }
 
