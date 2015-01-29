@@ -68,6 +68,7 @@ public class PollService extends IntentService {
                     .setTicker(resources.getString(R.string.new_picture_title))
                     .setSmallIcon(android.R.drawable.ic_menu_report_image)
                     .setContentTitle(resources.getString(R.string.new_picture_title))
+                    .setContentText(resources.getString(R.string.new_picture_text))
                     .setContentIntent(pi)
                     .setAutoCancel(true)
                     .build();
